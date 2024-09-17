@@ -139,6 +139,10 @@ export class ProductService {
     }
   }
 
+  async bypassFindAll(dto: RequestProductDto) {
+    return await this.genericRepository.findAll(dto, this.collection);
+  }
+
   async archive(_id: string, req: any) {
     const objectId = new ObjectId(_id);
     const existingProduct = await this.findOne(_id);

@@ -129,6 +129,12 @@ export class ProductController {
     return this.productService.findAll(dto, req);
   }
 
+
+  @Post('all-products')
+  bypassFindAll(@Body(RequestProductValidationPipe) dto: RequestProductDto) {
+    return this.productService.bypassFindAll(dto);
+  }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseRoles(Roles.Admin, Roles.Vendor)
   @Delete('product/:id')

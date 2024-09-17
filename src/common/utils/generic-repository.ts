@@ -366,17 +366,15 @@ export class GenericRepository {
 
   async findAll(dto: any, collection: string): Promise<any> {
     try {
-        const query = dto.query || {}; // Extract the query object
+        const query = dto.query || {};
         const regexQuery: any = {};
         let dateQuery: any = {};
-        let isArchived: boolean = dto?.isArchived;
+        let isArchived: boolean = dto?.isArchived || false;
   
-        // Pagination checks
         if (!dto.page || !dto.limit) {
             throw new BadRequestException('Pagination parameters (page and limit) are required.');
         }
   
-        // Handle date range queries
         if (query.dateRange) {
             const [start, end] = query.dateRange.split('|').map((date: string) => new Date(date));
             dateQuery = { createdAt: { $gte: start, $lte: end } };
@@ -386,7 +384,6 @@ export class GenericRepository {
             };
         }
   
-        // Construct the regex queries for other fields
         for (const key in query) {
             if (query.hasOwnProperty(key) && !['dateRange', 'start', 'end', 'order'].includes(key)) {
                 regexQuery[key] = { $regex: new RegExp(query[key], 'i') };
@@ -395,15 +392,12 @@ export class GenericRepository {
   
         const order = query.order ? { createdAt: query.order.toUpperCase() } : { createdAt: 'DESC' };
   
-        // Combine all queries together
         const finalQuery = {
             ...regexQuery,
             ...dateQuery,
             isArchived
         };
-        console.log("Final Query:", finalQuery); // Log the final query for debugging
     
-        // Execute the find and count operation
         const [data, total] = await this.repository.findAndCount({
             where: finalQuery,
             skip: (dto.page - 1) * dto.limit,
@@ -411,7 +405,6 @@ export class GenericRepository {
             order: order,
         });
     
-        // Handle no results found
         if (total === 0) {
             throw new NotFoundException(`No ${collection.toLowerCase()} found matching the query.`);
         }
@@ -427,12 +420,10 @@ export class GenericRepository {
         };
   
     } catch (error) {
-        // Handle known exceptions
         if (error instanceof NotFoundException || error instanceof BadRequestException) {
             throw error; 
         }
 
-        // General error handling
         throw new InternalServerErrorException({
             message: `Could not fetch ${collection.toLowerCase()}.`
         });

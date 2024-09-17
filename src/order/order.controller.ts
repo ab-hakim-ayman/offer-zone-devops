@@ -64,7 +64,7 @@ export class OrderController {
   findAll(@Body(RequestOrderValidationPipe) dto: RequestOrderDto, @Request() req: Request) {
     return this.orderService.findAll(req, dto);
   }
-
+  
 
   @Delete('order/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)

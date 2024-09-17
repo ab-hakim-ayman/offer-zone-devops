@@ -160,6 +160,7 @@ export class OrderService {
             ...dto.query,
             'products.vendorEmail': user.username
         };
+        let orders = await this.genericRepository.findAll(reqDto, this.collection);
     } 
     else if (user.role === 'admin') {
         console.log(user.role);
@@ -173,7 +174,7 @@ export class OrderService {
         reqDto.email = user.username;
     }
 
-    return await this.genericRepository.findAll(reqDto, this.collection);
+    // return await this.genericRepository.findAll(reqDto, this.collection);
   }
 
 
