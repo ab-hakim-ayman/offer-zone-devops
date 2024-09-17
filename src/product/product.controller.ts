@@ -11,6 +11,7 @@ import {
   Delete,
   UploadedFiles,
   UseGuards,
+  Request
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
@@ -26,6 +27,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { UseRoles } from 'src/common/decorators/roles.decorator';
 import { Roles } from 'src/common/enums/roles.enum';
+
 
 @Controller()
 export class ProductController {
@@ -58,6 +60,7 @@ export class ProductController {
   )
   async create(
     @Body(CreateProductValidationPipe) dto: CreateProductDto,
+    @Request() req: Request,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     if (!files || files.length === 0) {
@@ -72,18 +75,18 @@ export class ProductController {
 
     dto.images = files.map((file) => file.filename);
 
-    return this.productService.create(dto);
+    return this.productService.create(req, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseRoles(Roles.Admin)
   @Get('product/archives')
-  findArchive() {
-    return this.productService.findArchive();
+  findArchive(@Body(RequestProductValidationPipe) dto: RequestProductDto , @Request() req:any) {
+    return this.productService.findArchive(req, dto);
   }
 
   @Get('product/:id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @Request() req: any) {
     return this.productService.findOne(id);
   }
 
@@ -96,6 +99,7 @@ export class ProductController {
   async update(
     @Param('id') id: string,
     @Body(UpdateProductValidationPipe) dto: UpdateProductDto,
+    @Request() req: Request,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     if (files && files.length > 0) {
@@ -108,32 +112,34 @@ export class ProductController {
       dto.images = files.map((file) => file.filename);
     }
 
-    return this.productService.update(id, dto);
+    return this.productService.update(id, req, dto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseRoles(Roles.Admin, Roles.Vendor)
   @Delete('product/archives/delete/:id')
-  delete(@Param('id') id: string) {
-    return this.productService.delete(id);
+  delete(@Param('id') id: string, @Request() req: Request) {
+    return this.productService.delete(id, req);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseRoles(Roles.Admin, Roles.Vendor, Roles.User)
   @Post('products')
-  findAll(@Body(RequestProductValidationPipe) dto: RequestProductDto) {
-    return this.productService.findAll(dto);
+  findAll(@Body(RequestProductValidationPipe) dto: RequestProductDto, @Request() req: Request) {
+    return this.productService.findAll(dto, req);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseRoles(Roles.Admin, Roles.Vendor)
   @Delete('product/:id')
-  archive(@Param('id') id: string) {
-    return this.productService.archive(id);
+  archive(@Param('id') id: string, @Request() req: Request) {
+    return this.productService.archive(id, req);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseRoles(Roles.Admin, Roles.Vendor)
   @Post('product/archives/restore/:id')
-  restore(@Param('id') id: string) {
-    return this.productService.restore(id);
+  restore(@Param('id') id: string, @Request() req: Request) {
+    return this.productService.restore(id, req);
   }
 }

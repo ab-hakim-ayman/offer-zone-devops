@@ -13,13 +13,7 @@ export class Product {
   description: string;
 
   @Column({ type: 'float' })
-  purchasePrice: number;
-
-  @Column({ type: 'float' })
-  sellPrice: number;
-
-  @Column({ type: 'float', nullable: true })
-  discountPrice?: number;
+  price: number;
 
   @Column({ default: 0 })
   stockQuantity: number;
@@ -29,6 +23,12 @@ export class Product {
 
   @Column({ type: 'text' })
   images: string[];
+
+  @Column({ type: 'string' })
+  vendorEmail: string;
+
+  @Column({ type: 'text' })
+  vendorPhone: string;
 
   @Column({ default: false })
   isFeatured: boolean;
@@ -45,4 +45,3 @@ export class Product {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 }
-

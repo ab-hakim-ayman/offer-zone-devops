@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsObject, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from "class-validator";
 import { ObjectId } from "typeorm";
 
 export class ProductInOrder {
@@ -11,15 +11,15 @@ export class ProductInOrder {
 
     @IsNotEmpty()
     @IsNumber()
-    purchasePrice: number;
+    price: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    sellPrice: number;
+    @IsOptional()
+    @IsString()
+    vendorEmail?: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    stockQuantity: number;
+    @IsOptional()
+    @IsString()
+    vendorPhone?: string;
     
     @IsNotEmpty()
     @IsNumber()

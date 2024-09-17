@@ -27,22 +27,10 @@ import { Repository } from "typeorm";
             string: 'The Product description must be a string.',
           },
         },
-        purchasePrice: {
+        price: {
           list: ['float'],
           message: {
             float: 'The product purchasePrice must be a float number'
-          },
-        },
-        sellPrice: {
-          list: ['float'],
-          message: {
-            float: 'The product sellPrice must be a float number'
-          },
-        },
-        discountPrice: {
-          list: ['float'],
-          message: {
-            float: 'The product discountPrice must be a float number'
           },
         },
         stockQuantity: {

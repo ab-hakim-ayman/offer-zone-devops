@@ -12,16 +12,7 @@ export class CreateProductDto {
 
   @Transform(({ value }) => parseFloat(value))
   @IsNumber()
-  purchasePrice: number;
-
-  @Transform(({ value }) => parseFloat(value))
-  @IsNumber()
-  sellPrice: number;
-
-  @IsOptional()
-  @Transform(({ value }) => parseFloat(value))
-  @IsNumber()
-  discountPrice?: number;
+  price: number;
 
   @Transform(({ value }) => parseInt(value))
   @IsNumber()

@@ -49,10 +49,6 @@ export class Order {
   @IsNumber()
   price: number;
 
-  @Column({ type: 'float' })
-  @IsNumber()
-  profit: number;
-
   @Column({ type: 'boolean', default: false })
   isArchived: boolean;
 

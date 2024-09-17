@@ -30,13 +30,6 @@ export class CreateOrderValidationPipe
           string: 'The order name must be a string.',
         },
       },
-      email: {
-        list: ['required', 'email'],
-        message: {
-          required: 'The order email is required.',
-          email: 'The Order email must be a valid email.',
-        },
-      },
       phone: {
         list: ['required', 'phone'],
         message: {

@@ -8,10 +8,6 @@ export class UpdateOrderDto {
 
   @IsString()
   @IsOptional()
-  email?: string;
-
-  @IsString()
-  @IsOptional()
   phone?: string;
 
   @IsString()

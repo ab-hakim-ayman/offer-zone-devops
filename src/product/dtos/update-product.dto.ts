@@ -13,17 +13,7 @@ export class UpdateProductDto {
   @IsOptional()
   @Transform(({ value }) => parseFloat(value))
   @IsNumber()  
-  purchasePrice?: number;
-
-  @IsOptional()
-  @Transform(({ value }) => parseFloat(value))
-  @IsNumber()
-  sellPrice?: number;
-
-  @IsOptional()
-  @Transform(({ value }) => parseFloat(value))
-  @IsNumber()
-  discountPrice?: number;
+  price?: number;
 
   @IsOptional()
   @Transform(({ value }) => parseInt(value))

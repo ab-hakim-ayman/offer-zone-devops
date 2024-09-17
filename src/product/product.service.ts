@@ -50,12 +50,12 @@ export class ProductService {
                 const object = {
                     title: product['Title'],
                     description: product['Description'],
-                    purchasePrice: product['Purchase Price'],
-                    sellPrice: product['Sell Price'],
-                    discountPrice: product['Discount Price'],
+                    price: product['Price'],
                     stockQuantity: product['Stock Quantity'],
                     tags: tagsArray,
                     images: imagesArray, 
+                    vendorEmail: product['Vendor Email'],
+                    vendorPhone: product['Vendor Phone'],
                     isPublished: true,
                     isFeatured: false,
                     isArchived: false
@@ -82,41 +82,111 @@ export class ProductService {
 }
 
  
-  async create(dto: CreateProductDto) {
-    return await this.genericRepository.create(dto, this.collection);
+  async create(req: any, dto: CreateProductDto) {
+    const user = req.user;
+    console.log(user);
+    const productData = {
+      ...dto,
+      vendorEmail: user.username,
+      vendorPhone: user?.phone || null
+    }
+    return await this.genericRepository.create(productData, this.collection);
   }
 
   async findOne(id: string) {
     return await this.genericRepository.findOne({ _id: new ObjectId(id) }, this.collection);
   }
 
-  async update(_id: string, dto: UpdateProductDto) {
+  async update(_id: string, req: any, dto: UpdateProductDto) {
     const objectId = new ObjectId(_id);
-
     const existingProduct = await this.findOne(_id);
-    if (!existingProduct) {
+    const user = req.user;
+
+    if (existingProduct && user.username === existingProduct.vendorEmail) {
+      return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
+    } else {
       throw new NotFoundException('Product not found');
     }
-    return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
   }
 
-  async delete(id: string) {
-    return await this.genericRepository.delete({ _id: new ObjectId(id) }, this.collection);
+  async delete(_id: string, req: any) {
+    const objectId = new ObjectId(_id);
+    const existingProduct = await this.findOne(_id);
+    const user = req.user;
+
+    if (existingProduct && user.username === existingProduct.vendorEmail) {
+      return await this.genericRepository.delete({ _id: objectId }, this.collection);
+    } else if ( existingProduct && user.role == 'admin') {
+      return await this.genericRepository.delete({ _id: objectId }, this.collection);
+    } else {
+      throw new NotFoundException('Product not found');
+    }
   }
 
-  async findAll(dto: RequestProductDto) {
-    return await this.genericRepository.findAll(dto, this.collection);
+  async findAll(dto: RequestProductDto, req: any) {
+    const user = req.user;
+
+    if (user.role == 'vendor') {
+      const reqDto = {
+        ...dto,
+        query: {
+          vendorEmail: user.username
+        }
+      }
+      return await this.genericRepository.findAll(reqDto, this.collection);
+    } else {
+      return await this.genericRepository.findAll(dto, this.collection);
+    }
   }
 
-  async archive(id: string) {
-    return await this.genericRepository.archive({ _id: new ObjectId(id) }, this.collection);
+  async archive(_id: string, req: any) {
+    const objectId = new ObjectId(_id);
+    const existingProduct = await this.findOne(_id);
+    const user = req.user;
+
+    if ( existingProduct && user.username == existingProduct.vendorEmail ) {
+      return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
+    } else if ( existingProduct && user.role == 'admin') {
+      return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
+    } else {
+      throw new NotFoundException('Product not found');
+    }
   }
 
-  async restore(id: string) {
-    return await this.genericRepository.restore({ _id: new ObjectId(id) }, this.collection);
+  async restore(_id: string, req: any) {
+    const objectId = new ObjectId(_id);
+    const existingProduct = await this.findOne(_id);
+    const user = req.user;
+    console.log(user.username, user.role);
+
+    if ( existingProduct && user.username == existingProduct.vendorEmail ) {
+      return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
+    } else if ( existingProduct && user.role == 'admin') {
+      return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
+    } else {
+      throw new NotFoundException('Product not found');
+    }
   }
 
-  async findArchive() {
-    return await this.genericRepository.findArchive(this.collection);
+  async findArchive(req: any, dto: RequestProductDto) {
+    const user = req.user;
+
+    if (user.role == 'vendor') {
+      const reqDto = {
+        ...dto,
+        query: {
+          vendorEmail: user.username,
+        },
+        isArchived: true
+      }
+      return await this.genericRepository.findAll(reqDto, this.collection);
+    } else {
+      const rDto = {
+        ...dto,
+        isArchived: true
+      }
+      console.log(rDto);
+      return await this.genericRepository.findAll(rDto, this.collection);
+    }
   }
 }

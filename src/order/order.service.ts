@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GenericRepository } from 'src/common/utils/generic-repository';
 import { Product } from 'src/product/entities/product.entity';
@@ -36,10 +36,10 @@ export class OrderService {
     this.mongoClient = new MongoClient(process.env.DATABASE_URL);
   }
 
-  async create(dto: CreateOrderDto) {
+  async create(req: any, dto: CreateOrderDto) {
+    let user = req.user;
     let productArray = [];
     let totalPrice: number = 0;
-    let totalProfit: number = 0;
   
     for (const product of dto.products) {
       try {
@@ -52,14 +52,14 @@ export class OrderService {
           continue;
         }
   
-        const purchasePrice = queryProduct.purchasePrice;
-        const sellPrice = queryProduct.sellPrice;
+        const price = queryProduct.price;
+        const vendorEmail = queryProduct.vendorEmail;
+        const vendorPhone = queryProduct.vendorPhone;
         const stockQuantity = queryProduct.stockQuantity;
         const cartQuantity = product.cartQuantity;
   
         if (
-          purchasePrice == null ||
-          sellPrice == null ||
+          price == null ||
           cartQuantity == null
         ) {
           console.error(`Invalid data for product: ${product._id}`);
@@ -77,13 +77,15 @@ export class OrderService {
   
         await this.productRepository.save(queryProduct);
   
-        const subTotalPrice = cartQuantity * sellPrice;
-        const subTotalProfit = cartQuantity * (sellPrice - purchasePrice);
+        const subTotalPrice = cartQuantity * price;
   
         totalPrice += subTotalPrice;
-        totalProfit += subTotalProfit;
   
-        productArray.push({ ...product, sellPrice: sellPrice });
+        productArray.push({
+          ...product,
+          vendorEmail: vendorEmail,
+          vendorPhone: vendorPhone
+        });
       } catch (error) {
         console.error(`Error processing product ${product._id}:`, error);
         continue;
@@ -95,9 +97,9 @@ export class OrderService {
         return await this.genericRepository.create(
           {
             ...dto,
+            email: user.username,
             products: productArray,
             price: totalPrice,
-            profit: totalProfit,
           },
           this.collection
         );
@@ -115,27 +117,128 @@ export class OrderService {
     return await this.genericRepository.findOne({ _id: new ObjectId(id) }, this.collection);
   }
 
-  async update(id: string, dto: UpdateOrderDto) {
-    return await this.genericRepository.update({ _id: new ObjectId(id) }, dto, this.collection);
+  async update(_id: string, req: any, dto: UpdateOrderDto) {
+    const objectId = new ObjectId(_id);
+    const existingOrder = await this.findOne(_id);
+    const product = existingOrder.products;
+    const user = req.user;
+
+    if (existingOrder && user.username === product.vendorEmail) {
+      return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
+    } else if (existingOrder && user.username === 'admin') {
+      return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
+    } else {
+      throw new NotFoundException('Order not found');
+    }
   }
 
-  async delete(id: string) {
-    return await this.genericRepository.delete({ _id: new ObjectId(id) }, this.collection);
+  async delete(_id: string, req: any) {
+    let existingOrder = await this.findOne(_id);
+    const user = req.user;
+    console.log(user.username);
+
+    const hasVendorEmail = hasVendorEmailInOrder(existingOrder, user.username);
+    console.log(hasVendorEmail);
+
+    if ( existingOrder && hasVendorEmail ) {
+      console.log('its works');
+      return await this.genericRepository.delete({ _id: new ObjectId(_id) }, this.collection);
+    } else if ( !existingOrder ) {
+      throw new NotFoundException('Order not found');
+    } else {
+      throw new NotImplementedException('Order deletion failed');
+    }
   }
 
-  async findAll(dto: RequestOrderDto) {
-    return await this.genericRepository.findAll(dto, this.collection);
+  async findAll(req: any, dto: RequestOrderDto) {
+    const user = req.user;
+
+    let reqDto: any = { ...dto, isArchived: false };
+
+    if (user.role === 'vendor') {
+        reqDto.query = {
+            ...dto.query,
+            'products.vendorEmail': user.username
+        };
+    } 
+    else if (user.role === 'admin') {
+        console.log(user.role);
+        reqDto.query = {
+            ...dto.query,
+            'products.vendorEmail': dto.query?.vendorEmail || user.username 
+        };
+        console.log(reqDto);
+    } 
+    else {
+        reqDto.email = user.username;
+    }
+
+    return await this.genericRepository.findAll(reqDto, this.collection);
   }
 
-  async archive(id: string) {
-    return await this.genericRepository.archive({ _id: new ObjectId(id) }, this.collection);
+
+
+  async archive(_id: string, req: any) {
+    const objectId = new ObjectId(_id);
+    let existingOrder = await this.findOne(_id);
+    const user = req.user;
+    console.log(user.username);
+
+    const hasVendorEmail = hasVendorEmailInOrder(existingOrder, user.username);
+    console.log(hasVendorEmail);
+
+    if ( existingOrder && hasVendorEmail ) {
+      console.log('its works');
+      return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
+    } else if ( existingOrder && user.role == 'admin') {
+      return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
+    } else {
+      throw new NotFoundException('Order not found');
+    }
   }
 
-  async restore(id: string) {
-    return await this.genericRepository.restore({ _id: new ObjectId(id) }, this.collection);
+  async restore(_id: string, req: any) {
+    let existingOrder = await this.findOne(_id);
+    const user = req.user;
+    console.log(user.username);
+
+    const hasVendorEmail = hasVendorEmailInOrder(existingOrder, user.username);
+    console.log(hasVendorEmail);
+
+    if ( existingOrder && hasVendorEmail ) {
+      console.log('its works');
+      return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
+    } else if ( existingOrder && user.role == 'admin') {
+      return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
+    } else {
+      throw new NotFoundException('Order not found');
+    }
   }
 
-  async findArchive() {
-    return await this.genericRepository.findArchive(this.collection);
+  async findArchive(req: any, dto: RequestOrderDto) {
+    const user = req.user;
+
+    if (user.role == 'vendor') {
+      const reqDto = {
+        ...dto,
+        query: {
+          'products.vendorEmail': user.username,
+        },
+        isArchived: true
+      }
+      return await this.genericRepository.findAll(reqDto, this.collection);
+    } else {
+      const rDto = {
+        ...dto,
+        isArchived: true
+      }
+      console.log(rDto);
+      return await this.genericRepository.findAll(rDto, this.collection);
+    }
   }
+}
+
+function hasVendorEmailInOrder(order: any, vendorEmail: any) {
+  const products = order.data.products;
+  return products.some(product => product.vendorEmail === vendorEmail);
 }

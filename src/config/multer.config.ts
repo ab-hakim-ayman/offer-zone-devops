@@ -25,7 +25,7 @@ export const multerConfig = (
     fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req: any, file: any, cb: any) => {
-    const allowedImageTypes = /jpeg|jpg|png|gif/;
+    const allowedImageTypes = /jpeg|jpg|png|gif|webp/;
     const allowedXlsxType = /xlsx/;
     const ext = extname(file.originalname).toLowerCase();
 

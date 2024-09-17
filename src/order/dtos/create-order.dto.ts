@@ -10,10 +10,6 @@ export class CreateOrderDto {
 
   @IsString()
   @IsNotEmpty()
-  email: string;
-
-  @IsString()
-  @IsNotEmpty()
   phone: string;
 
   @IsString()
