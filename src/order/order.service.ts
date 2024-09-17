@@ -161,23 +161,38 @@ export class OrderService {
             'products.vendorEmail': user.username
         };
         let orders = await this.genericRepository.findAll(reqDto, this.collection);
+        const ordersArray = Array.isArray(orders) ? orders : orders.data || [];
+
+        const products = ordersArray.reduce((acc, order) => {
+            const vendorProducts = order.products.filter(product => product.vendorEmail === user.username);
+            return acc.concat(vendorProducts);
+        }, []);
+
+        return products;
     } 
     else if (user.role === 'admin') {
-        console.log(user.role);
         reqDto.query = {
             ...dto.query,
             'products.vendorEmail': dto.query?.vendorEmail || user.username 
         };
-        console.log(reqDto);
+        let orders = await this.genericRepository.findAll(reqDto, this.collection);
+        const ordersArray = Array.isArray(orders) ? orders : orders.data || [];
+
+        const products = ordersArray.reduce((acc, order) => {
+            const vendorProducts = order.products.filter(product => product.vendorEmail === user.username);
+            return acc.concat(vendorProducts);
+        }, []);
+
+        let allOrders = await this.genericRepository.findAll(reqDto, this.collection);
+
+        return {allOrders, products};
     } 
     else {
         reqDto.email = user.username;
     }
 
-    // return await this.genericRepository.findAll(reqDto, this.collection);
+    return await this.genericRepository.findAll(reqDto, this.collection);
   }
-
-
 
   async archive(_id: string, req: any) {
     const objectId = new ObjectId(_id);

@@ -428,11 +428,8 @@ export class GenericRepository {
             message: `Could not fetch ${collection.toLowerCase()}.`
         });
     }
-}
+  }
 
-  
-  
-  
 
   async findOneWithQuery(key: string, value: any, collection: string): Promise<any> {
     try {
