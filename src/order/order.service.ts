@@ -172,8 +172,7 @@ export class OrderService {
     } 
     else if (user.role === 'admin') {
         reqDto.query = {
-            ...dto.query,
-            'products.vendorEmail': dto.query?.vendorEmail || user.username 
+            ...dto.query
         };
         let orders = await this.genericRepository.findAll(reqDto, this.collection);
         const ordersArray = Array.isArray(orders) ? orders : orders.data || [];
