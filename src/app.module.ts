@@ -8,7 +8,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { DemoModule } from './demo/demo.module';
-import { databaseConfig } from './config/database.config';
+import { typeOrmMongoConfig } from './config/database.config';
 import { jwtConfig } from './config/jwt.config';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
@@ -19,7 +19,7 @@ import { OrderModule } from './order/order.module';
       envFilePath: ['.env'],
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule.forRootAsync(typeOrmMongoConfig),
     TypeOrmModule.forFeature([]),
     JwtModule.registerAsync(jwtConfig),
     AuthModule, 

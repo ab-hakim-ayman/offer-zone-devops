@@ -1,11 +1,21 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { User } from '../user/entities/user.entity';
-import { Demo } from '../demo/entities/demo.entity';
+import { TypeOrmModuleAsyncOptions, TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { ConfigService,ConfigModule } from "@nestjs/config/dist";
 
-export const databaseConfig: TypeOrmModuleOptions = {
-  type: 'mongodb',
-  url: process.env.DATABASE_URL,
-  synchronize: true,
-  useUnifiedTopology: true,
-  entities: [__dirname + '/../**/*.entity{.ts,.js}']
-};
+export let typeOrmMongoConfig:TypeOrmModuleAsyncOptions ={
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          type: 'mongodb',
+          url: configService.get<string>('MONGO_DB_URI'), // Use environment variable for MongoDB URI
+          useUnifiedTopology: true,
+          host: configService.get('MONGO_DB_HOST') || 'mongo',
+          port: +configService.get('MONGO_DB_PORT') || 27017,
+          username: configService.get('MONGO_DB_USERNAME') || '',
+          password: configService.get('MONGO_DB_PASSWORD') || '',
+          database: configService.get('MONGO_DB_DATABASE_NAME') || 'oz',
+          authSource:'admin',
+          entities: [__dirname+"./../**/entities/*.entity{.ts,.js}"],
+          subscribers:[__dirname+"./../**/*.subscriber{.ts,.js}"],
+          synchronize: true, 
+        }),
+        inject: [ConfigService],
+      }
