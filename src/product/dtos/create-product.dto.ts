@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
-import { IsString, IsNotEmpty, IsOptional, IsArray, IsBoolean, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsArray, IsBoolean, IsNumber, IsEnum } from 'class-validator';
+import { Categories } from 'src/common/enums/categories.enum';
 
 export class CreateProductDto {
   @IsString()

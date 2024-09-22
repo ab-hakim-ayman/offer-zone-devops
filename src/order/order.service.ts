@@ -33,7 +33,7 @@ export class OrderService {
       VendorOrderDetailSerializer,
       VendorOrderListSerializer
     );
-    this.mongoClient = new MongoClient(process.env.DATABASE_URL);
+    this.mongoClient = new MongoClient(process.env.MONGO_DB_URI);
   }
 
   async create(req: any, dto: CreateOrderDto) {

@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
-import { IsString, IsOptional, IsNumber, IsArray, IsBoolean, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsArray, IsBoolean, IsNotEmpty, IsEnum } from 'class-validator';
+import { Categories } from 'src/common/enums/categories.enum';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -9,6 +10,10 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsEnum(Categories)
+  @IsOptional()
+  category?: Categories;
 
   @IsOptional()
   @Transform(({ value }) => parseFloat(value))
@@ -36,8 +41,4 @@ export class UpdateProductDto {
   @IsOptional()
   @IsBoolean()
   isPublished?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  isArchived?: boolean;
 }

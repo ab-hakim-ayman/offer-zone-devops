@@ -1,6 +1,7 @@
 import { Injectable, PipeTransform, ArgumentMetadata, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Validator } from "class-validator";
+import { Categories } from "src/common/enums/categories.enum";
 import { GenericValidator } from "src/common/utils/generic-validator";
 import { Product } from "src/product/entities/product.entity";
 import { Repository } from "typeorm";
@@ -26,6 +27,12 @@ import { Repository } from "typeorm";
           message: {
             string: 'The Product description must be a string.',
           },
+        },
+        category: {
+          list: ['enum'],
+          message: {
+            enum: Object.values(Categories)
+          }
         },
         price: {
           list: ['float'],

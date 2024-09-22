@@ -54,7 +54,6 @@ export class UpdateOrderValidationPipe
           enum: Object.values(OrderStatus)
         }
       }
-      
     }
   }
 

@@ -80,7 +80,7 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseRoles(Roles.Admin)
-  @Get('product/archives')
+  @Post('product/archives')
   findArchive(@Body(RequestProductValidationPipe) dto: RequestProductDto , @Request() req:any) {
     return this.productService.findArchive(req, dto);
   }

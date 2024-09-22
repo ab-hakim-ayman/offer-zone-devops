@@ -47,7 +47,7 @@ export class GenericRepository {
       await this.repository.save(record);
 
       return {
-        data: record,
+        record,
         message: `${collection} successfully created`,
         status: HttpStatus.CREATED,
       };
@@ -67,11 +67,7 @@ export class GenericRepository {
         throw new NotFoundException(`${collection} not found`);
       }
 
-      return {
-        data: record,
-        message: `${collection} found`,
-        status: HttpStatus.OK,
-      };
+      return record;
     } catch (error) {
       this.handleDatabaseError(error, `Error finding ${collection}`);
     }
@@ -125,7 +121,7 @@ export class GenericRepository {
       await this.repository.save(record);
   
       return {
-        data: record,
+        record,
         message: `${collection} successfully updated`,
         status: HttpStatus.OK,
       };
@@ -233,7 +229,7 @@ export class GenericRepository {
       await this.repository.save(record);
 
       return {
-        data: record,
+        record,
         message: `${collection} successfully archived`,
         status: HttpStatus.OK,
       };
@@ -261,7 +257,7 @@ export class GenericRepository {
       await this.repository.save(record);
 
       return {
-        data: record,
+        record,
         message: `${collection} successfully restored`,
         status: HttpStatus.OK,
       };
@@ -283,7 +279,7 @@ export class GenericRepository {
       }
 
       return {
-        data: records,
+        records,
         message: `Archived ${collection.toLowerCase()} records found`,
         status: HttpStatus.OK,
       };
@@ -294,75 +290,6 @@ export class GenericRepository {
       throw new InternalServerErrorException(`An error occurred while fetching archived ${collection.toLowerCase()}`);
     }
   }
-
-  // async findAll(dto: any, collection: string): Promise<any> {
-  //   try {
-  //     const query = dto.query || {};
-  //     const regexQuery: any = {};
-  //     let dateQuery: any = {};
-  //     let isArchived: boolean = dto?.isArchived;
-  
-  //     if (!dto.page || !dto.limit) {
-  //       throw new BadRequestException('Pagination parameters (page and limit) are required.');
-  //     }
-  
-  //     if (query.dateRange) {
-  //       const [start, end] = query.dateRange.split('|').map((date: string) => new Date(date));
-  //       dateQuery = { createdAt: { $gte: start, $lte: end } };
-  //     } else if (query.start && query.end) {
-  //       dateQuery = {
-  //         createdAt: { $gte: new Date(query.start), $lte: new Date(query.end) },
-  //       };
-  //     }
-  
-  //     for (const key in query) {
-  //       if (query.hasOwnProperty(key) && !['dateRange', 'start', 'end', 'order'].includes(key)) {
-  //         regexQuery[key] = { $regex: new RegExp(query[key], 'i') };
-  //       }
-  //     }
-  
-  //     const order = query.order ? { createdAt: query.order.toUpperCase() } : { createdAt: 'DESC' };
-  
-  //     const finalQuery = {
-  //       ...regexQuery,
-  //       ...dateQuery,
-  //       isArchived
-  //     };
-  //     console.log(finalQuery);
-    
-  //     const [data, total] = await this.repository.findAndCount({
-  //       where: finalQuery,
-  //       skip: (dto.page - 1) * dto.limit,
-  //       take: dto.limit,
-  //       order: order,
-  //     });
-    
-  //     if (total === 0) {
-  //       throw new NotFoundException(`No ${collection.toLowerCase()} found matching the query.`);
-  //     }
-  
-  //     return {
-  //       data,
-  //       totalObject: total,
-  //       pageSize: dto.limit,
-  //       currentPage: dto.page,
-  //       totalPage: Math.ceil(total / dto.limit),
-  //       message: `${collection}s successfully found.`,
-  //       status: HttpStatus.OK,
-  //     };
-  
-  //   } catch (error) {
-  
-  //     if (error instanceof NotFoundException || error instanceof BadRequestException) {
-  //       throw error; 
-  //     }
-  
-  //     throw new InternalServerErrorException({
-  //       message: `Could not fetch ${collection.toLowerCase()}.`
-  //     });
-  //   }
-  // }
-
 
   async findAll(dto: any, collection: string): Promise<any> {
     try {
@@ -451,7 +378,7 @@ export class GenericRepository {
       }
 
       return {
-        data: record,
+        record,
         message: `${collection} found`,
         status: HttpStatus.OK,
       };

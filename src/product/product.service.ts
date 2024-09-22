@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import * as XLSX from 'xlsx';
 import { InjectRepository } from "@nestjs/typeorm";
 import { GenericRepository } from "src/common/utils/generic-repository";
@@ -84,7 +84,6 @@ export class ProductService {
  
   async create(req: any, dto: CreateProductDto) {
     const user = req.user;
-    console.log(user);
     const productData = {
       ...dto,
       vendorEmail: user.username,
@@ -97,17 +96,28 @@ export class ProductService {
     return await this.genericRepository.findOne({ _id: new ObjectId(id) }, this.collection);
   }
 
-  async update(_id: string, req: any, dto: UpdateProductDto) {
-    const objectId = new ObjectId(_id);
-    const existingProduct = await this.findOne(_id);
+  async update(id: string, req: any, dto: UpdateProductDto) {
+    const objectId = new ObjectId(id);
+    const existingProduct = await this.findOne(id);
     const user = req.user;
-
-    if (existingProduct && user.username === existingProduct.vendorEmail) {
-      return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
-    } else {
+  
+    if (!existingProduct) {
       throw new NotFoundException('Product not found');
     }
+  
+    if (user.role === 'admin') {
+      return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
+    }
+  
+    if (user.username === existingProduct.vendorEmail) {
+      const { category, isPublished, ...vendorUpdatableFields } = dto;
+  
+      return await this.genericRepository.update({ _id: objectId }, vendorUpdatableFields, this.collection);
+    }
+  
+    throw new UnauthorizedException('You do not have permission to update this product');
   }
+  
 
   async delete(_id: string, req: any) {
     const objectId = new ObjectId(_id);

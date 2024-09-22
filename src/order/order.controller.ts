@@ -23,7 +23,7 @@ export class OrderController {
   }
 
 
-  @Get('order/archives')
+  @Post('order/archives')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseRoles(Roles.Admin, Roles.Vendor)
   findArchive(@Body(RequestOrderValidationPipe) dto: RequestOrderDto, @Request() req: Request) {
