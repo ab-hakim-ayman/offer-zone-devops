@@ -1,4 +1,4 @@
-export enum Actions {
+export enum Action {
     Overwrite = 'overwrite',
     Append = 'append'
 }

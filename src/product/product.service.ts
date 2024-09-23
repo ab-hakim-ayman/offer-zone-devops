@@ -99,6 +99,7 @@ export class ProductService {
   async update(id: string, req: any, dto: UpdateProductDto) {
     const objectId = new ObjectId(id);
     const existingProduct = await this.findOne(id);
+    console.log(existingProduct.data);
     const user = req.user;
   
     if (!existingProduct) {
@@ -109,7 +110,7 @@ export class ProductService {
       return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
     }
   
-    if (user.username === existingProduct.vendorEmail) {
+    if (user.username === existingProduct.data['vendorEmail']) {
       const { category, isPublished, ...vendorUpdatableFields } = dto;
   
       return await this.genericRepository.update({ _id: objectId }, vendorUpdatableFields, this.collection);
@@ -124,7 +125,7 @@ export class ProductService {
     const existingProduct = await this.findOne(_id);
     const user = req.user;
 
-    if (existingProduct && user.username === existingProduct.vendorEmail) {
+    if (existingProduct && user.username === existingProduct.data['vendorEmail']) {
       return await this.genericRepository.delete({ _id: objectId }, this.collection);
     } else if ( existingProduct && user.role == 'admin') {
       return await this.genericRepository.delete({ _id: objectId }, this.collection);
@@ -133,7 +134,7 @@ export class ProductService {
     }
   }
 
-  async findAll(dto: RequestProductDto, req: any) {
+  async findAll(req: any, dto: RequestProductDto) {
     const user = req.user;
 
     if (user.role == 'vendor') {
@@ -158,7 +159,7 @@ export class ProductService {
     const existingProduct = await this.findOne(_id);
     const user = req.user;
 
-    if ( existingProduct && user.username == existingProduct.vendorEmail ) {
+    if ( existingProduct && user.username == existingProduct.data['vendorEmail'] ) {
       return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
     } else if ( existingProduct && user.role == 'admin') {
       return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
@@ -173,7 +174,7 @@ export class ProductService {
     const user = req.user;
     console.log(user.username, user.role);
 
-    if ( existingProduct && user.username == existingProduct.vendorEmail ) {
+    if ( existingProduct && user.username == existingProduct.data['vendorEmail'] ) {
       return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
     } else if ( existingProduct && user.role == 'admin') {
       return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);

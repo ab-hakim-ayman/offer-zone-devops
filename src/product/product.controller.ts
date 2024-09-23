@@ -24,9 +24,9 @@ import { RequestProductDto } from './dtos/request-product.dto';
 import { RequestProductValidationPipe } from './pipes/validation/request-product-validation.pipe';
 import { UploadExcelDto } from './dtos/upload-excel.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { UseRoles } from 'src/common/decorators/roles.decorator';
-import { Roles } from 'src/common/enums/roles.enum';
+import { RoleGuard } from 'src/common/guards/role.guard';
+import { UseRole } from 'src/common/decorators/role.decorator';
+import { Role } from 'src/common/enums/role.enum';
 
 
 @Controller()
@@ -53,8 +53,8 @@ export class ProductController {
   }
 
   @Post('product')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
   @UseInterceptors(
     FilesInterceptor('images', 10, multerConfig('products', 'image')),
   )
@@ -78,8 +78,8 @@ export class ProductController {
     return this.productService.create(req, dto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin)
   @Post('product/archives')
   findArchive(@Body(RequestProductValidationPipe) dto: RequestProductDto , @Request() req:any) {
     return this.productService.findArchive(req, dto);
@@ -90,8 +90,8 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
   @Patch('product/:id')
   @UseInterceptors(
     FilesInterceptor('images', 10, multerConfig('products', 'image')),
@@ -115,18 +115,18 @@ export class ProductController {
     return this.productService.update(id, req, dto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
   @Delete('product/archives/delete/:id')
   delete(@Param('id') id: string, @Request() req: Request) {
     return this.productService.delete(id, req);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor, Roles.User)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor, Role.User)
   @Post('products')
   findAll(@Body(RequestProductValidationPipe) dto: RequestProductDto, @Request() req: Request) {
-    return this.productService.findAll(dto, req);
+    return this.productService.findAll(req, dto);
   }
 
 
@@ -135,15 +135,15 @@ export class ProductController {
     return this.productService.bypassFindAll(dto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
   @Delete('product/:id')
   archive(@Param('id') id: string, @Request() req: Request) {
     return this.productService.archive(id, req);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
   @Post('product/archives/restore/:id')
   restore(@Param('id') id: string, @Request() req: Request) {
     return this.productService.restore(id, req);

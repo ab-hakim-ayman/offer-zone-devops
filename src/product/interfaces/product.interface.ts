@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { Categories } from 'src/common/enums/categories.enum';
+import { Category } from 'src/common/enums/category.enum';
 
 export interface IProduct {
   _id: ObjectId;
   title: string;
   description: string;
-  category: Categories;
+  category: Category;
   price: number;
   discountPrice?: number;
   stockQuantity: number;

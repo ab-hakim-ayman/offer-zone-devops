@@ -120,10 +120,11 @@ export class OrderService {
   async update(_id: string, req: any, dto: UpdateOrderDto) {
     const objectId = new ObjectId(_id);
     const existingOrder = await this.findOne(_id);
-    const product = existingOrder.products;
+    console.log(existingOrder)
+    const products = existingOrder.products;
     const user = req.user;
 
-    if (existingOrder && user.username === product.vendorEmail) {
+    if (existingOrder && user.username === products.data['vendorEmail']) {
       return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
     } else if (existingOrder && user.username === 'admin') {
       return await this.genericRepository.update({ _id: objectId }, dto, this.collection);

@@ -1,7 +1,7 @@
 import { Injectable, PipeTransform, ArgumentMetadata, HttpException, HttpStatus } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Validator } from "class-validator";
-import { Categories } from "src/common/enums/categories.enum";
+import { Category } from "src/common/enums/category.enum";
 import { GenericValidator } from "src/common/utils/generic-validator";
 import { Product } from "src/product/entities/product.entity";
 import { Repository } from "typeorm";
@@ -31,7 +31,7 @@ import { Repository } from "typeorm";
         category: {
           list: ['enum'],
           message: {
-            enum: Object.values(Categories)
+            enum: Object.values(Category)
           }
         },
         price: {
@@ -69,17 +69,22 @@ import { Repository } from "typeorm";
           message: {
             boolean: 'The Product isPublished must be a boolean.',
           }
-        },
-        isArchived: {
-          list: ['boolean'],
-          message: {
-            boolean: 'The Product isArchived must be a boolean.',
-          }
         }
       };
     }
   
     async transform(value: any, metadata: ArgumentMetadata) {
+      if (value.category === undefined) {
+        delete this.condition['category'];
+      }
+
+      if (value.isPublished !== undefined) {
+        value.isPublished = value.isPublished === 'true' || value.isPublished === true;
+      }
+      if (value.isFeatured !== undefined) {
+        value.isFeatured = value.isFeatured === 'true' || value.isFeatured === true;
+      }
+
       this.givenValues = value;
   
       try {
@@ -91,7 +96,7 @@ import { Repository } from "typeorm";
         throw new HttpException(
           {
             statusCode: HttpStatus.BAD_REQUEST,
-            message: 'Product create validation failed',
+            message: 'Product update validation failed',
             errors: error,
           },
           HttpStatus.BAD_REQUEST,

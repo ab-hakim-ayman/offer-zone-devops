@@ -47,7 +47,7 @@ export class GenericRepository {
       await this.repository.save(record);
 
       return {
-        record,
+        data: record,
         message: `${collection} successfully created`,
         status: HttpStatus.CREATED,
       };
@@ -67,7 +67,12 @@ export class GenericRepository {
         throw new NotFoundException(`${collection} not found`);
       }
 
-      return record;
+      return {
+        data: record,
+        message: `${collection} found`,
+        status: HttpStatus.OK,
+      };
+
     } catch (error) {
       this.handleDatabaseError(error, `Error finding ${collection}`);
     }
@@ -121,7 +126,7 @@ export class GenericRepository {
       await this.repository.save(record);
   
       return {
-        record,
+        data: record,
         message: `${collection} successfully updated`,
         status: HttpStatus.OK,
       };
@@ -229,7 +234,7 @@ export class GenericRepository {
       await this.repository.save(record);
 
       return {
-        record,
+        data: record,
         message: `${collection} successfully archived`,
         status: HttpStatus.OK,
       };
@@ -257,7 +262,7 @@ export class GenericRepository {
       await this.repository.save(record);
 
       return {
-        record,
+        data: record,
         message: `${collection} successfully restored`,
         status: HttpStatus.OK,
       };
@@ -279,7 +284,7 @@ export class GenericRepository {
       }
 
       return {
-        records,
+        data: records,
         message: `Archived ${collection.toLowerCase()} records found`,
         status: HttpStatus.OK,
       };
@@ -337,7 +342,7 @@ export class GenericRepository {
         }
   
         return {
-            data,
+            data: data,
             totalObject: total,
             pageSize: dto.limit,
             currentPage: dto.page,
@@ -378,7 +383,7 @@ export class GenericRepository {
       }
 
       return {
-        record,
+        data: record,
         message: `${collection} found`,
         status: HttpStatus.OK,
       };

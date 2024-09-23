@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as nodemailer from 'nodemailer';
 import { ObjectId } from 'mongodb';
-import { Roles } from 'src/common/enums/roles.enum';
+import { Role } from 'src/common/enums/role.enum';
 import { GenericRepository } from 'src/common/utils/generic-repository';
 import { User } from 'src/user/entities/user.entity';
 import {
@@ -72,7 +72,7 @@ export class AuthService {
       const user = this.userRepository.create({
         ...otherDetails,
         password: hashedPassword,
-        role: isAdmin ? Roles.Admin : isVendor ? Roles.Vendor : Roles.User,
+        role: isAdmin ? Role.Admin : isVendor ? Role.Vendor : Role.User,
       });
 
       const savedUser = await this.userRepository.save(user);

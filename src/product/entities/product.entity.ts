@@ -1,7 +1,7 @@
 import { Entity, ObjectIdColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ObjectId } from 'mongodb';
 
-import { Categories } from '../../common/enums/categories.enum';
+import { Category } from '../../common/enums/category.enum';
 
 @Entity()
 export class Product {
@@ -16,9 +16,9 @@ export class Product {
 
   @Column({
     type: 'enum',
-    enum: Categories
+    enum: Category
   })
-  category: Categories;
+  category: Category;
 
   @Column({ type: 'float' })
   price: number;

@@ -7,40 +7,40 @@ import { RequestOrderDto } from './dtos/request-order.dto';
 import { CreateOrderDto } from './dtos/create-order.dto';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { UseRoles } from 'src/common/decorators/roles.decorator';
-import { Roles } from 'src/common/enums/roles.enum';
+import { RoleGuard } from 'src/common/guards/role.guard';
+import { UseRole } from 'src/common/decorators/role.decorator';
+import { Role } from 'src/common/enums/role.enum';
 
 @Controller()
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post('order')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor, Roles.User)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor, Role.User)
   create(@Body(CreateOrderValidationPipe) dto: CreateOrderDto, @Request() req: Request) {
     return this.orderService.create(req, dto);
   }
 
 
   @Post('order/archives')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
   findArchive(@Body(RequestOrderValidationPipe) dto: RequestOrderDto, @Request() req: Request) {
     return this.orderService.findArchive(req, dto);
   }
 
   @Get('order/:id')
   @UseGuards(JwtAuthGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor, Roles.User)
+  @UseRole(Role.Admin, Role.Vendor, Role.User)
   findOne(@Param('id') id: string, @Request() req: Request) {
     return this.orderService.findOne(id);
   }
 
 
   @Patch('order/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.User, Roles.User)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.User, Role.User)
   update(
     @Param('id') id: string,
     @Body(UpdateOrderValidationPipe) dto: UpdateOrderDto,
@@ -50,8 +50,8 @@ export class OrderController {
   }
 
   @Delete('order/archives/delete/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin)
   delete(@Param('id') id: string, @Request() req: Request) {
     return this.orderService.delete(id, req);
   }
@@ -59,16 +59,16 @@ export class OrderController {
 
 
   @Post('orders')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
   findAll(@Body(RequestOrderValidationPipe) dto: RequestOrderDto, @Request() req: Request) {
     return this.orderService.findAll(req, dto);
   }
   
 
   @Delete('order/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor, Roles.User)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor, Role.User)
   archive(@Param('id') id: string, @Request() req: Request) {
     console.log("hello archive")
     return this.orderService.archive(id, req);
@@ -76,9 +76,9 @@ export class OrderController {
 
 
   @Post('order/archives/restore/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @UseRoles(Roles.Admin, Roles.Vendor)
-  @UseRoles(Roles.Admin)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @UseRole(Role.Admin, Role.Vendor)
+  @UseRole(Role.Admin)
   restore(@Param('id') id: string, @Request() req: Request) {
     return this.orderService.restore(id, req);
   }

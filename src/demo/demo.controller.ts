@@ -13,7 +13,7 @@ import { DemoService } from './demo.service';
 import { CreateDemoDto } from './dtos/create-demo.dto';
 import { UpdateDemoDto } from './dtos/update-demo.dto';
 import { RequestDemoDto } from './dtos/request-demo.dto';
-import { UseRoles } from 'src/common/decorators/roles.decorator';
+import { UseRole } from 'src/common/decorators/role.decorator';
 import { CreateDemoValidationPipe } from './pipes/validation/create-demo-validation.pipe';
 import { UpdateDemoValidationPipe } from './pipes/validation/update-demo-validation.pipe';
 import { RequestDemoValidationPipe } from './pipes/validation/request-demo-validation.pipe';

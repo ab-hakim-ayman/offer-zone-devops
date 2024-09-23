@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Entity, Column, ObjectIdColumn } from 'typeorm';
 
-import { Roles } from 'src/common/enums/roles.enum';
+import { Role } from 'src/common/enums/role.enum';
 
 @Entity()
 export class User {
@@ -19,10 +19,10 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: Roles,
-    default: Roles.User,
+    enum: Role,
+    default: Role.User,
   })
-  role: Roles;
+  role: Role;
 
   @Column({ type: 'text', nullable: true })
   address: string;
