@@ -99,7 +99,6 @@ export class ProductService {
   async update(id: string, req: any, dto: UpdateProductDto) {
     const objectId = new ObjectId(id);
     const existingProduct = await this.findOne(id);
-    console.log(existingProduct.data);
     const user = req.user;
   
     if (!existingProduct) {
@@ -172,7 +171,6 @@ export class ProductService {
     const objectId = new ObjectId(_id);
     const existingProduct = await this.findOne(_id);
     const user = req.user;
-    console.log(user.username, user.role);
 
     if ( existingProduct && user.username == existingProduct.data['vendorEmail'] ) {
       return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
@@ -200,7 +198,6 @@ export class ProductService {
         ...dto,
         isArchived: true
       }
-      console.log(rDto);
       return await this.genericRepository.findAll(rDto, this.collection);
     }
   }

@@ -104,7 +104,6 @@ export class OrderService {
           this.collection
         );
       } catch (error) {
-        console.error('Error creating order:', error);
         throw new Error('Order creation failed');
       }
     } else {
@@ -119,12 +118,12 @@ export class OrderService {
 
   async update(_id: string, req: any, dto: UpdateOrderDto) {
     const objectId = new ObjectId(_id);
-    const existingOrder = await this.findOne(_id);
-    console.log(existingOrder)
-    const products = existingOrder.products;
+    let existingOrder = await this.findOne(_id);
     const user = req.user;
 
-    if (existingOrder && user.username === products.data['vendorEmail']) {
+    const hasVendorEmail = hasVendorEmailInOrder(existingOrder, user.username)
+
+    if (existingOrder && hasVendorEmail) {
       return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
     } else if (existingOrder && user.username === 'admin') {
       return await this.genericRepository.update({ _id: objectId }, dto, this.collection);
@@ -133,16 +132,14 @@ export class OrderService {
     }
   }
 
+
   async delete(_id: string, req: any) {
     let existingOrder = await this.findOne(_id);
     const user = req.user;
-    console.log(user.username);
 
     const hasVendorEmail = hasVendorEmailInOrder(existingOrder, user.username);
-    console.log(hasVendorEmail);
 
     if ( existingOrder && hasVendorEmail ) {
-      console.log('its works');
       return await this.genericRepository.delete({ _id: new ObjectId(_id) }, this.collection);
     } else if ( !existingOrder ) {
       throw new NotFoundException('Order not found');
@@ -198,13 +195,10 @@ export class OrderService {
     const objectId = new ObjectId(_id);
     let existingOrder = await this.findOne(_id);
     const user = req.user;
-    console.log(user.username);
 
     const hasVendorEmail = hasVendorEmailInOrder(existingOrder, user.username);
-    console.log(hasVendorEmail);
 
     if ( existingOrder && hasVendorEmail ) {
-      console.log('its works');
       return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
     } else if ( existingOrder && user.role == 'admin') {
       return await this.genericRepository.archive({ _id: new ObjectId(_id) }, this.collection);
@@ -216,13 +210,10 @@ export class OrderService {
   async restore(_id: string, req: any) {
     let existingOrder = await this.findOne(_id);
     const user = req.user;
-    console.log(user.username);
 
     const hasVendorEmail = hasVendorEmailInOrder(existingOrder, user.username);
-    console.log(hasVendorEmail);
 
     if ( existingOrder && hasVendorEmail ) {
-      console.log('its works');
       return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
     } else if ( existingOrder && user.role == 'admin') {
       return await this.genericRepository.restore({ _id: new ObjectId(_id) }, this.collection);
@@ -248,7 +239,6 @@ export class OrderService {
         ...dto,
         isArchived: true
       }
-      console.log(rDto);
       return await this.genericRepository.findAll(rDto, this.collection);
     }
   }

@@ -13,10 +13,10 @@ spec:
         app: nestjs
     spec:
       containers:
-      - name: nestjs
-        image: nestjs-app:latest
+      - name: offer-zone
+        image: dockerartisan/offer-zone-app:latest
         ports:
         - containerPort: 3000
         env:
         - name: MONGO_DB_URI
-          value: mongodb://mongo-service:27017/nestjs-db
+          value: mongodb://mongo-service:27017/offer-zone-db

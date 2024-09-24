@@ -40,7 +40,7 @@ export class OrderController {
 
   @Patch('order/:id')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @UseRole(Role.Admin, Role.User, Role.User)
+  @UseRole(Role.Admin, Role.Vendor, Role.User)
   update(
     @Param('id') id: string,
     @Body(UpdateOrderValidationPipe) dto: UpdateOrderDto,
@@ -49,13 +49,13 @@ export class OrderController {
     return this.orderService.update(id, req, dto);
   }
 
+
   @Delete('order/archives/delete/:id')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @UseRole(Role.Admin)
+  @UseRole(Role.Admin, Role.Vendor)
   delete(@Param('id') id: string, @Request() req: Request) {
     return this.orderService.delete(id, req);
   }
-
 
 
   @Post('orders')
@@ -70,7 +70,6 @@ export class OrderController {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @UseRole(Role.Admin, Role.Vendor, Role.User)
   archive(@Param('id') id: string, @Request() req: Request) {
-    console.log("hello archive")
     return this.orderService.archive(id, req);
   }
 
