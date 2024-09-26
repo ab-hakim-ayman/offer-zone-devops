@@ -1,30 +1,18 @@
-# Stage 1: Build the NestJS app
-FROM node:18 AS build
+# Use Node.js base image
+FROM node:14
 
+# Set the working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy the package.json and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy the application files
+# Copy the rest of the application
 COPY . .
 
-# Build the NestJS app
-RUN npm run build
-
-# Stage 2: Serve the application
-FROM node:18
-
-WORKDIR /app
-
-# Copy necessary files
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/package*.json ./
-
-# Expose the app port (default: 3000)
+# Expose the application port
 EXPOSE 3000
 
-# Command to run the application
+# Start the NestJS application
 CMD ["npm", "run", "start:prod"]

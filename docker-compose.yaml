@@ -1,32 +1,23 @@
 version: '3.8'
-
 services:
   mongo:
     image: mongo:latest
-    container_name: mongo
-    networks:
-      - my-network
+    container_name: mongodb
     ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: offer-zone-db
-
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+      
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: offer-zone-app
-    networks:
-      - my-network
+    build: .
+    container_name: nestjs-app
     ports:
-      - "3000:3000"
-    environment:
-      MONGO_DB_URI: mongodb://mongo:27017
-      JWT_SECRET: d3b07384d113edec49eaa6238ad5ff00
-      JWT_EXPIRES_IN: 15m
+      - '3000:3000'
     depends_on:
       - mongo
+    environment:
+      MONGO_URI: mongodb://mongo:27017/nest
+    command: npm run start:prod
 
-networks:
-  my-network:
-    driver: bridge
+volumes:
+  mongo-data:
