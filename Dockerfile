@@ -3,13 +3,11 @@ FROM node:18 AS build
 
 WORKDIR /app
 
-# Install dependencies (without optional native dependencies)
+# Install dependencies
 COPY package*.json ./
+RUN npm install
 
-# Ensure native dependencies like bcrypt are rebuilt inside the container
-RUN npm install --force
-
-# Copy the rest of the application files
+# Copy the application files
 COPY . .
 
 # Build the NestJS app
@@ -20,7 +18,7 @@ FROM node:18
 
 WORKDIR /app
 
-# Copy the necessary files from the build stage
+# Copy necessary files
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./

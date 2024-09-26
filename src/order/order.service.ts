@@ -46,6 +46,7 @@ export class OrderService {
         const queryProduct = await this.productRepository.findOne({
           _id: new ObjectId(product._id),
         } as any);
+        console.log(queryProduct);
   
         if (!queryProduct) {
           console.error(`Product not found for _id: ${product._id}`);

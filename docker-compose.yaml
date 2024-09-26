@@ -9,8 +9,6 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
       MONGO_INITDB_DATABASE: offer-zone-db
 
   app:
@@ -23,7 +21,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      MONGO_DB_URI: mongodb://root:rootpassword@mongo:27017/offer-zone-db?authSource=admin
+      MONGO_DB_URI: mongodb://mongo:27017
       JWT_SECRET: d3b07384d113edec49eaa6238ad5ff00
       JWT_EXPIRES_IN: 15m
     depends_on:
