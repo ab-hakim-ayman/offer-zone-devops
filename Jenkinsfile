@@ -4,6 +4,7 @@ pipeline {
         registry = "dockerartisan/offer-zone-devops"
         registryCredential = 'docker-credentials'
         dockerImage = ''
+        kubeconfigId = 'minikube-config'
     }
     stages {
         stage('Checkout Code') {
@@ -43,8 +44,7 @@ pipeline {
                     // Deploy the Docker image to Kubernetes
                     kubernetesDeploy(
                         kubeconfigId: kubeconfigId, // Reference kubeconfig credentials
-                        configs: 'k8s/nestjs-deployment.yaml',
-                        enableConfigSubstitution: true
+                        configs: 'k8s/nestjs-deployment.yaml'
                     )
                 }
             }
