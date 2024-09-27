@@ -26,6 +26,17 @@ pipeline {
                 }
             }
         }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push the Docker image to DockerHub
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                        dockerImage.push('latest') // Push latest tag
+                    }
+                }
+            }
+        }
     }
 }
 
