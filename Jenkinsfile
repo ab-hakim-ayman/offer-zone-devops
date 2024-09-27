@@ -50,11 +50,11 @@ pipeline {
             }
         }
         post {
-        always {
-            // Clean up the workspace after the build testing
-            cleanWs()
+            always {
+                // Clean up the workspace after the build testing
+                cleanWs()
+            }
         }
-    }
     }
 }
 
