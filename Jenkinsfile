@@ -37,6 +37,24 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Deploy the Docker image to Kubernetes
+                    kubernetesDeploy(
+                        kubeconfigId: kubeconfigId, // Reference kubeconfig credentials
+                        configs: 'k8s/nestjs-deployment.yaml',
+                        enableConfigSubstitution: true
+                    )
+                }
+            }
+        }
+        post {
+        always {
+            // Clean up the workspace after the build testing
+            cleanWs()
+        }
+    }
     }
 }
 
