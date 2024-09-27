@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UserService {}
-
-
-// hello world
+export class UserService {
+  console.log("hello world");
+}
