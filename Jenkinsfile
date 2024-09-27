@@ -41,13 +41,17 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Deploy the Docker image to Kubernetes
-                    kubernetesDeploy(
-                        kubeconfigId: kubeconfigId, // Reference kubeconfig credentials
-                        configs: 'k8s/nestjs-deployment.yaml'
-                    )
+                    // Deploy using kubectl
+                    withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG')]) {
+                        sh 'kubectl apply -f k8s/nestjs-deployment.yaml --kubeconfig $KUBECONFIG'
+                    }
                 }
             }
+        }
+    }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
