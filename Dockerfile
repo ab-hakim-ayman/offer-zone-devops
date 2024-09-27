@@ -1,18 +1,23 @@
-# Use Node.js base image
-FROM node:14
+# Dockerfile
+FROM node:18-alpine
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy the package.json and install dependencies
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application
+# Copy all files
 COPY . .
+
+# Build the application
+RUN npm run build
 
 # Expose the application port
 EXPOSE 3000
 
-# Start the NestJS application
+# Start the app
 CMD ["npm", "run", "start:prod"]

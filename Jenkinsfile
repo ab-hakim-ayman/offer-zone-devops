@@ -1,49 +1,49 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    registry = "dockerartisan/nestjs-app"
-    registryCredential = 'dockerhub-credentials'
-    dockerImage = ''
-  }
-
-  stages {
-    stage('Clone Git') {
-      steps {
-        git 'https://github.com/ab-hakim-ayman/offer-zone-devops.git'
-      }
+    environment {
+        registry = "dockerartisan/nestjs-app"
+        registryCredential = 'docker-credentials'
+        dockerImage = ''
     }
 
-    stage('Build Docker Image') {
-      steps {
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+    stages {
+        stage('Clone Git') {
+            steps {
+                git 'https://github.com/ab-hakim-ayman/offer-zone-devops.git'
+            }
         }
-      }
-    }
 
-    stage('Push Docker Image') {
-      steps {
-        script {
-          docker.withRegistry('', registryCredential) {
-            dockerImage.push()
-          }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
         }
-      }
-    }
 
-    stage('Deploy to Kubernetes') {
-      steps {
-        script {
-          kubernetesDeploy(kubeconfigId: 'kubeconfigId', configs: 'k8s/deployment.yaml')
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
+            }
         }
-      }
-    }
-  }
 
-  post {
-    always {
-      cleanWs()
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    kubernetesDeploy(kubeconfigId: 'kube-config', configs: 'k8s/nestjs-deployment.yaml')
+                }
+            }
+        }
     }
-  }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
 }
