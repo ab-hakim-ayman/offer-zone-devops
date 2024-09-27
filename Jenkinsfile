@@ -1,14 +1,13 @@
 pipeline {
     agent any
-
     environment {
-        registry = "dockerartisan/nestjs-app"
+        registry = "dockerartisan/offer-zone-devops"
         registryCredential = 'docker-credentials'
         dockerImage = ''
+        kubeconfigId = 'kube-config'
     }
-
     stages {
-        stage('Clone Git') {
+        stage('Clone Repository') {
             steps {
                 git 'https://github.com/ab-hakim-ayman/offer-zone-devops.git'
             }
@@ -27,6 +26,7 @@ pipeline {
                 script {
                     docker.withRegistry('', registryCredential) {
                         dockerImage.push()
+                        dockerImage.push('latest')
                     }
                 }
             }
@@ -35,12 +35,15 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    kubernetesDeploy(kubeconfigId: 'kube-config', configs: 'k8s/nestjs-deployment.yaml')
+                    kubernetesDeploy(
+                        kubeconfigId: kubeconfigId,
+                        configs: 'k8s/nestjs-deployment.yaml',
+                        enableConfigSubstitution: true
+                    )
                 }
             }
         }
     }
-
     post {
         always {
             cleanWs()
