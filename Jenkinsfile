@@ -7,6 +7,21 @@ pipeline {
         kubeconfigId = 'kube-config'
     }
     stages {
+        stage('Checkout Code') {
+            steps {
+                // Check out the Git repository using the given configuration
+                checkout([
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/main']], 
+                    extensions: [], 
+                    userRemoteConfigs: [[
+                        credentialsId: 'github-credentials', 
+                        url: 'https://github.com/ab-hakim-ayman/offer-zone-devops.git'
+                    ]]
+                ])
+            }
+        }
+        
         stage('Clone Repository') {
             steps {
                 git 'https://github.com/ab-hakim-ayman/offer-zone-devops.git'
