@@ -49,11 +49,6 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            cleanWs()
-        }
-    }
 }
 
 // testing 1, 2
