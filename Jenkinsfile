@@ -42,12 +42,10 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG')]) {
-                        // Replace image tag dynamically with the build number
-                        sh """
-                            sed -i 's/latest/${BUILD_NUMBER}/g' k8s/nestjs-deployment.yaml
-                            export KUBECONFIG=$KUBECONFIG
+                        bat '''
+                            set KUBECONFIG=%KUBECONFIG%
                             kubectl apply -f k8s/nestjs-deployment.yaml
-                        """
+                        '''
                     }
                 }
             }
