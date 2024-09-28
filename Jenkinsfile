@@ -41,9 +41,13 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Deploy using kubectl but not work
                     withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG')]) {
-                        sh 'kubectl apply -f k8s/nestjs-deployment.yaml --kubeconfig $KUBECONFIG'
+                        // Replace image tag dynamically with the build number
+                        sh """
+                            sed -i 's/latest/${BUILD_NUMBER}/g' k8s/nestjs-deployment.yaml
+                            export KUBECONFIG=$KUBECONFIG
+                            kubectl apply -f k8s/nestjs-deployment.yaml
+                        """
                     }
                 }
             }

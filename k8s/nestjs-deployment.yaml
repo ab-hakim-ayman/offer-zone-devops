@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nestjs-app
+  name: offer-zone-devops
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nestjs-app
+      app: offer-zone-devops
   template:
     metadata:
       labels:
-        app: nestjs-app
+        app: offer-zone-devops
     spec:
       containers:
-      - name: nestjs-app
-        image: dockerartisan/nestjs-app:latest
+      - name: offer-zone-devops
+        image: dockerartisan/offer-zone-devops:${BUILD_NUMBER}
         ports:
         - containerPort: 3000
         env:
         - name: MONGO_URI
-          value: mongodb://mongodb-service:27017/nestjs-app-db
+          value: mongodb://mongodb-service:27017/offer-zone-devops-db
         resources:
           requests:
             memory: "256Mi"
@@ -27,7 +27,6 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        # Optional, but recommended, health checks for production
         readinessProbe:
           httpGet:
             path: /
@@ -46,10 +45,10 @@ kind: Service
 metadata:
   name: nestjs-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 3000
       targetPort: 3000
-      protocol: TCP
+      nodePort: 32000
   selector:
-    app: nestjs-app
+    app: offer-zone-devops
