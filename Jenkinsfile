@@ -38,18 +38,18 @@ pipeline {
                 }
             }
         }
-        // stage('Deploy to Kubernetes') {
-        //     steps {
-        //         script {
-        //             withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG')]) {
-        //                 bat '''
-        //                     set KUBECONFIG=%KUBECONFIG%
-        //                     kubectl apply -f k8s/nestjs-deployment.yaml
-        //                 '''
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG')]) {
+                        bat '''
+                            set KUBECONFIG=%KUBECONFIG%
+                            kubectl apply -f k8s/nestjs-deployment.yaml
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
 
