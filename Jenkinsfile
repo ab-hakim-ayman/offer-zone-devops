@@ -44,6 +44,7 @@ pipeline {
                     withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG')]) {
                         bat '''
                             set KUBECONFIG=%KUBECONFIG%
+                            kubectl config set-cluster minikube --server=https://127.0.0.1:52246
                             kubectl apply -f k8s/nestjs-deployment.yaml --validate=false
                         '''
                     }
