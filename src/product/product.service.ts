@@ -84,6 +84,7 @@ export class ProductService {
  
   async create(req: any, dto: CreateProductDto) {
     const user = req.user;
+    console.log(user);
     const productData = {
       ...dto,
       vendorEmail: user.username,
