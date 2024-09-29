@@ -44,7 +44,7 @@ pipeline {
                     withCredentials([file(credentialsId: kubeconfigId, variable: 'KUBECONFIG')]) {
                         bat '''
                             set KUBECONFIG=%KUBECONFIG%
-                            kubectl apply -f k8s/nestjs-deployment.yaml
+                            kubectl apply -f k8s/nestjs-deployment.yaml --validate=false
                         '''
                     }
                 }
