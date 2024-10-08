@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: offer-zone-devops
-        image: dockerartisan/offer-zone-devops:${BUILD_NUMBER}
+        image: dockerartisan/offer-zone-devops:latest
         ports:
         - containerPort: 3000
         env:
