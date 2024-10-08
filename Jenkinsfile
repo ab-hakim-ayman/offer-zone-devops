@@ -45,6 +45,7 @@ pipeline {
                         bat '''
                             set KUBECONFIG=%KUBECONFIG%
                             kubectl config set-cluster minikube --server=https://127.0.0.1:60698
+                            kubectl apply -f k8s/mongodb-deployment.yaml --validate=false
                             kubectl apply -f k8s/nestjs-deployment.yaml --validate=false
                         '''
                     }
